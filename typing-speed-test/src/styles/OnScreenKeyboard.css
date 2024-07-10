@@ -1,0 +1,14 @@
+
+.myTheme .hg-button {
+  background-color: #FFC8DD;
+}
+
+.myTheme {
+  background-color: #CDB4DB;
+}
+
+.myTheme .hg-button:active {
+  background-color: #E2B4BD;
+  color: #000;
+}
+
