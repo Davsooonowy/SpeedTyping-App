@@ -1,17 +1,17 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-
-import Test from './pages/Test';
-import exp from "node:constants";
+import TypingTestPage from './pages/TypingTestPage';
+import Layout from './layouts/Layout'; // Ensure Layout is imported
+import './styles/App.css';
 
 function App() {
   return (
     <Router>
-      <Sidebar />
-      <Routes>
-        <Route path="/test" element={<Test />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="" element={<TypingTestPage />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }
