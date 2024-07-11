@@ -16,12 +16,11 @@ const TypingTestPage: React.FC = () => {
     if (!timeLeft) resetTimer();
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-  // Example: Check if the key is alphanumeric and not a control key
-  // This is a simplistic approach; you might need to adjust it based on your requirements
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+      // Check if the key is alphanumeric and not a control key
       if (event.key.length === 1 && /[a-zA-Z0-9]/.test(event.key)) {
-        const newInput = input + event.key;
-        handleInputChange(newInput);
+        // Start the timer if it's not already active
+        if (!isActive) startTimer();
       }
       // Implement other key handling logic as needed
     };
@@ -31,7 +30,7 @@ const TypingTestPage: React.FC = () => {
     <Container style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', marginTop: '64px', justifyContent: 'center' }}>
       <HeaderSection />
       <Grid container spacing={2} justifyContent="center">
-        <Grid item><StatsCircle label="Time Left" value={`${timeLeft}s`} /></Grid> {/* Updated to dynamically display timeLeft */}
+        <Grid item><StatsCircle label="Time Left" value={`${timeLeft}s`} /></Grid>
         <Grid item><StatsCircle label="WPM" value="120" /></Grid>
         <Grid item><StatsCircle label="CPM" value="400" /></Grid>
         <Grid item><StatsCircle label="Accuracy" value="25%" /></Grid>
