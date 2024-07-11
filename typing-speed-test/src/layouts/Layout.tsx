@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { AppBar, Box, Toolbar, Typography, Container, CssBaseline } from '@mui/material';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 interface LayoutProps {
   children: ReactNode;
@@ -16,6 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </Box>
       </Container>
+      <Footer />
     </>
   );
 };

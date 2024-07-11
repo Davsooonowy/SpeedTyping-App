@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { Colors } from '../assets/colors'; // Adjust the import path as necessary
+import { Colors } from '../assets/colors';
 
 interface StatsCircleProps {
   label: string;
@@ -16,7 +16,7 @@ const StatsCircle: React.FC<StatsCircleProps> = ({ label, value }) => {
           value={100}
           size={100}
           thickness={2}
-          style={{ color: Colors.Secondary }}
+          style={{ color: Colors.first }}
         />
         <Box
           top={0}
