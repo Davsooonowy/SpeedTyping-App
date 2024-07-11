@@ -5,18 +5,22 @@ import { Colors } from '../assets/colors';
 interface StatsCircleProps {
   label: string;
   value: number | string;
+  percentage?: number;
+  color?: string;
 }
 
-const StatsCircle: React.FC<StatsCircleProps> = ({ label, value }) => {
+const StatsCircle: React.FC<StatsCircleProps> = ({ label, value, percentage = 100, color = Colors.first }) => {
+  const progress = percentage; // Assuming percentage is already calculated before passing to this component
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
       <Box position="relative" display="inline-flex">
         <CircularProgress
           variant="determinate"
-          value={100}
+          value={percentage}
           size={100}
           thickness={2}
-          style={{ color: Colors.first }}
+          style={{ color }}
         />
         <Box
           top={0}
