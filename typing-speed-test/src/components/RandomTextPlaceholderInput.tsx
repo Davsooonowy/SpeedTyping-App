@@ -1,20 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { TextField } from '@mui/material';
 import { useRandomText } from '../hooks/useRandomText';
 import { Colors } from '../assets/colors';
+import {calculateAccuracy, calculateCPM, calculateWPM} from "../utils/statisticsUtils";
 
 interface RandomTextPlaceholderInputProps {
   onInputChange: (newInput: string) => void;
   input: string;
   onClick?: () => void;
   onKeyDown?: (event: React.KeyboardEvent) => void;
+  onUpdateAccuracy?: (accuracy: number) => void;
+  onUpdateCPM?: (cpm: number) => void;
+  onUpdateWPM?: (wpm: number) => void;
+  timeLeft: number;
+  resetTrigger: number;
 }
 
-const RandomTextPlaceholderInput: React.FC<RandomTextPlaceholderInputProps> = ({ onInputChange, input, onClick, onKeyDown }) => {
-  const { text: originalText, loading } = useRandomText();
+const RandomTextPlaceholderInput: React.FC<RandomTextPlaceholderInputProps> = ({ onInputChange, input, onClick, onKeyDown, onUpdateAccuracy, onUpdateCPM, timeLeft, onUpdateWPM, resetTrigger }) => {
+  const { text: originalText, loading } = useRandomText([resetTrigger]);
   const [position, setPosition] = useState(0);
   const [successfulInput, setSuccessfulInput] = useState<{ char: string; crossed: boolean }[]>([]);
   const [maxChars, setMaxChars] = useState(35);
+  const [totalLetters, setTotalLetters] = useState(0);
+  const [correctLetters, setCorrectLetters] = useState(0);
+  const [currentWord, setCurrentWord] = useState('');
+  const [correctWords, setCorrectWords] = useState(0);
+
+
+  useEffect(() => {
+    setPosition(0);
+    setSuccessfulInput([]);
+  }, [resetTrigger]);
 
   useEffect(() => {
     const calculateMaxChars = () => {
@@ -49,13 +65,37 @@ const handleKeyDownPrevent = (event: React.KeyboardEvent) => {
     const match = originalText.charAt(position) === event.key;
     setPosition((prevPosition) => prevPosition + 1);
 
+    if (event.key !== ' ') {
+      setCurrentWord((prevWord) => prevWord + event.key);
+    } else {
+      // Check correctness of the word when space is encountered
+      const isCorrect = originalText.split(' ')[correctWords] === currentWord;
+      if (isCorrect) {
+        setCorrectWords((prevCount) => prevCount + 1);
+      }
+      setCurrentWord(''); // Reset current word for the next word
+    }
+
     let updatedInput;
+    setTotalLetters((prevTotal) => prevTotal + 1);
     if (match) {
+      setCorrectLetters((prevCorrect) => prevCorrect + 1);
       updatedInput = [...successfulInput, { char: event.key, crossed: false }];
     } else {
       const originalChar = originalText.charAt(position);
       updatedInput = [...successfulInput, { char: originalChar, crossed: true }];
     }
+
+    const accuracy = calculateAccuracy(correctLetters, totalLetters);
+    if (onUpdateAccuracy) onUpdateAccuracy(accuracy);
+
+    const elapsedTime = (60 - timeLeft);
+
+    const CPM = calculateCPM(correctLetters, elapsedTime);
+    if (onUpdateCPM) onUpdateCPM(CPM);
+
+    const WPM = calculateWPM(correctWords, elapsedTime);
+    if (onUpdateWPM) onUpdateWPM(WPM);
 
     const maxChars = 35;
     while (updatedInput.map(item => item.char).join(' ').length > maxChars && updatedInput.length > 1) {
@@ -69,7 +109,7 @@ const handleKeyDownPrevent = (event: React.KeyboardEvent) => {
 
   const displayedText = loading ? 'Loading...' : originalText.substring(position);
 
-return (
+  return (
     <TextField
       fullWidth
       value={displayedText}

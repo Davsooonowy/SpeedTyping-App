@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 
-export const useRandomText = () => {
+export const useRandomText = (dependencies: any[] = []) => {
   const [text, setText] = useState('Loading...');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,8 @@ export const useRandomText = () => {
     };
 
     fetchRandomText();
-  }, []);
+
+  }, [...dependencies]);
 
   return { text, loading, error };
 };
