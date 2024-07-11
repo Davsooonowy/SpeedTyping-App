@@ -5,11 +5,12 @@ import StatsCircle from '../components/StatsCircle';
 import HeaderSection from '../components/HeaderSection';
 import { Box, Container, Grid } from '@mui/material';
 import useTimer from '../hooks/useTimer';
+import { TIMER_DESCRIPTION, WPM_DESCRIPTION, CPM_DESCRIPTION, ACCURACY_DESCRIPTION } from '../assets/metricsDescriptions';
+
 
 const TypingTestPage: React.FC = () => {
   const [input, setInput] = useState("");
-  const { timeLeft, startTimer, isActive, resetTimer } = useTimer(60); // Added isActive to destructuring
-
+  const { timeLeft, startTimer, isActive, resetTimer } = useTimer(60);
   const handleInputChange = (newInput: string) => {
     setInput(newInput);
     if (!isActive) startTimer();
@@ -17,12 +18,9 @@ const TypingTestPage: React.FC = () => {
   };
 
     const handleKeyDown = (event: React.KeyboardEvent) => {
-      // Check if the key is alphanumeric and not a control key
       if (event.key.length === 1 && /[a-zA-Z0-9]/.test(event.key)) {
-        // Start the timer if it's not already active
         if (!isActive) startTimer();
       }
-      // Implement other key handling logic as needed
     };
 
 
@@ -30,10 +28,10 @@ const TypingTestPage: React.FC = () => {
     <Container style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', marginTop: '64px', justifyContent: 'center' }}>
       <HeaderSection />
       <Grid container spacing={2} justifyContent="center">
-        <Grid item><StatsCircle label="Time Left" value={`${timeLeft}s`} /></Grid>
-        <Grid item><StatsCircle label="WPM" value="120" /></Grid>
-        <Grid item><StatsCircle label="CPM" value="400" /></Grid>
-        <Grid item><StatsCircle label="Accuracy" value="25%" /></Grid>
+        <Grid item><StatsCircle label="Time Left" value={`${timeLeft}s`} description={TIMER_DESCRIPTION}/></Grid>
+        <Grid item><StatsCircle label="WPM" value="120" description={WPM_DESCRIPTION}/></Grid>
+        <Grid item><StatsCircle label="CPM" value="400" description={CPM_DESCRIPTION} /></Grid>
+        <Grid item><StatsCircle label="Accuracy" value='42' description={ACCURACY_DESCRIPTION} /></Grid>
       </Grid>
       <Box my={4} display="flex" flexDirection="column" alignItems="center" gap={2}>
           <RandomTextPlaceholderInput onInputChange={handleInputChange} input={input} onKeyDown={handleKeyDown} />
