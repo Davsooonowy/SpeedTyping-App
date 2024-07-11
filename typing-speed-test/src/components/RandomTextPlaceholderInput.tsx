@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField } from '@mui/material';
 import { useRandomText } from '../hooks/useRandomText';
+import { Colors } from '../assets/colors';
 
 interface RandomTextPlaceholderInputProps {
   onInputChange: (newInput: string) => void;
@@ -47,13 +48,13 @@ const RandomTextPlaceholderInput: React.FC<RandomTextPlaceholderInputProps> = ({
           borderRadius: '0.75em',
           '& .MuiOutlinedInput-notchedOutline': {
             borderWidth: '0.125rem',
-            borderColor: '#FFC8DD',
+            borderColor: Colors.Secondary,
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#FFC8DD',
+            borderColor: Colors.Secondary,
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#FFC8DD',
+            borderColor: Colors.first,
           },
         },
       }}

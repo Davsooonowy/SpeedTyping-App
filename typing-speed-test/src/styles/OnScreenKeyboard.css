@@ -1,14 +1,19 @@
-
 .myTheme .hg-button {
-  background-color: #FFC8DD;
+  background-color: #14213D;
+  color: #E5E5E5;
 }
 
 .myTheme {
-  background-color: #CDB4DB;
+  background-color: #E5E5E5;
 }
 
 .myTheme .hg-button:active {
-  background-color: #E2B4BD;
+  background-color: #FCA311;
+  color: #000;
+}
+
+.myTheme .hg-button.activeKey {
+  background-color: #FCA311;
   color: #000;
 }
 
