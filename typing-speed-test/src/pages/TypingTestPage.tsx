@@ -11,7 +11,7 @@ import Popup from "../components/ScorePopup";
 
 const TypingTestPage: React.FC = () => {
   const [input, setInput] = useState("");
-  const { timeLeft, startTimer, isActive, resetTimer } = useTimer(3);
+  const { timeLeft, startTimer, isActive, resetTimer } = useTimer(60);
   const [accuracy, setAccuracy] = useState(0);
   const [cpm, setCPM] = useState(0);
   const [wpm, setWPM] = useState(0);
