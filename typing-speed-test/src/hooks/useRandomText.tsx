@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabase';
+import { supabase } from '../utils/supabase';
 
 export const useRandomText = (dependencies: any[] = []) => {
   const [text, setText] = useState('Loading...');

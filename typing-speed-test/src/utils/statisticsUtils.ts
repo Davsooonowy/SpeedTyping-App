@@ -9,8 +9,11 @@ export const calculateCPM = (correctLetters: number, totalTime: number): number 
   return parseInt(String((correctLetters / totalTime) * 60));
 };
 
+
+//TODO: [bug] if i start from mistake it is alyways 0
 export const calculateWPM = (correctWords: number, totalTime: number): number => {
-  console.log(correctWords, totalTime);
-  if (correctWords === 0 || totalTime === 0) return 0;
-  return parseInt(String((correctWords / totalTime) * 60));
+  if (totalTime === 0) return 0;
+  const minutes = totalTime / 60;
+  const wpm = correctWords / minutes;
+  return Math.round(wpm);
 };
