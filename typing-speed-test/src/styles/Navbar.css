@@ -1,18 +1,18 @@
 .logo-img {
-  margin-right: 8px;
+    margin-right: 8px;
 }
 
 /* Hide on extra-small screens, display on medium screens and up */
 @media screen and (max-width: 600px) {
-  .logo-img {
-    display: none;
-  }
+    .logo-img {
+        display: none;
+    }
 }
 
 @media screen and (min-width: 600px) {
-  .logo-img {
-    display: flex;
-  }
+    .logo-img {
+        display: flex;
+    }
 }
 
 

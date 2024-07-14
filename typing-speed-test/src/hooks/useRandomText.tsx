@@ -1,51 +1,51 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabase';
+import {useEffect, useState} from 'react';
+import {supabase} from '../utils/supabase';
 
 export const useRandomText = (dependencies: any[] = []) => {
-  const [text, setText] = useState('Loading...');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+    const [text, setText] = useState('Loading...');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchRandomText = async () => {
-      try {
-        let { data: ids, error: idsError } = await supabase
-          .from('texts')
-          .select('id');
+    useEffect(() => {
+        const fetchRandomText = async () => {
+            try {
+                let {data: ids, error: idsError} = await supabase
+                    .from('texts')
+                    .select('id');
 
-        if (idsError) throw idsError;
+                if (idsError) throw idsError;
 
-        if (!ids || ids.length === 0) {
-          throw new Error('No IDs found');
-        }
+                if (!ids || ids.length === 0) {
+                    throw new Error('No IDs found');
+                }
 
-        const randomIndex = Math.floor(Math.random() * ids.length);
-        const randomId = ids[randomIndex].id;
+                const randomIndex = Math.floor(Math.random() * ids.length);
+                const randomId = ids[randomIndex].id;
 
-        let { data, error } = await supabase
-          .from('texts')
-          .select('content')
-          .eq('id', randomId)
-          .single();
+                let {data, error} = await supabase
+                    .from('texts')
+                    .select('content')
+                    .eq('id', randomId)
+                    .single();
 
-        if (error) throw error;
+                if (error) throw error;
 
-        if (!data) {
-          throw new Error('No data found');
-        }
+                if (!data) {
+                    throw new Error('No data found');
+                }
 
-        setText(data.content);
-      } catch (error) {
-        console.error("Error fetching random text:", error);
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
+                setText(data.content);
+            } catch (error) {
+                console.error("Error fetching random text:", error);
+                setError((error as Error).message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    fetchRandomText();
+        fetchRandomText();
 
-  }, [...dependencies]);
+    }, [...dependencies]);
 
-  return { text, loading, error };
+    return {text, loading, error};
 };
