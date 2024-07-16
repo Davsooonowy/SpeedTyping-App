@@ -126,9 +126,22 @@ export const LoginRegisterForm: React.FC<LoginRegisterProps> = ({open, onClose})
         message: string;
         severity: 'error' | 'info' | 'success' | 'warning' | undefined
     }>({show: false, message: '', severity: undefined});
-    const [avatar, setAvatar] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [resetEmail, setResetEmail] = useState('');
+
+    const handleForgotPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const {data, error} = await supabase.auth.resetPasswordForEmail(resetEmail, {
+            redirectTo: 'http://localhost:3000/update-password',
+        });
+        if (error) {
+            setAlert({show: true, message: error.message, severity: 'error'});
+        } else {
+            setAlert({show: true, message: 'Check your email for the reset link.', severity: 'success'});
+        }
+    };
 
 
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,7 +194,6 @@ export const LoginRegisterForm: React.FC<LoginRegisterProps> = ({open, onClose})
                 return;
             }
 
-            // Proceed with the original sign-up process if checks pass
             const {data, error: signUpError} = await supabase.auth.signUp({email, password});
             if (signUpError) {
                 console.error('Error signing up:', signUpError.message);
@@ -194,24 +206,9 @@ export const LoginRegisterForm: React.FC<LoginRegisterProps> = ({open, onClose})
                 return;
             }
 
-            let avatarUrl = null;
-            if (avatar) {
-                const fileName = `${uuidv4()}.${avatar.name.split('.').pop()}`; // Generate a unique file name
-                const {error: uploadError} = await supabase.storage.from('avatars').upload(fileName, avatar);
-                if (uploadError) {
-                    console.error('Error uploading avatar:', uploadError.message);
-                } else {
-                    const {data: urlData} = await supabase.storage.from('avatars').getPublicUrl(fileName);
-                    avatarUrl = urlData.publicUrl;
-                    if (!avatarUrl) {
-                        console.error('Error getting avatar URL');
-                    }
-                }
-            }
-
             const {error: profileError} = await supabase
                 .from('profiles')
-                .insert([{id: user.id, username: username, avatar_url: avatarUrl}]);
+                .insert([{id: user.id, username: username, avatar_url: null}]);
             if (profileError) {
                 console.error('Error creating profile:', profileError.message);
                 setAlert({
@@ -220,6 +217,34 @@ export const LoginRegisterForm: React.FC<LoginRegisterProps> = ({open, onClose})
                     severity: 'error'
                 });
             } else {
+                if (avatarPreview && fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length > 0) {
+                    const avatarFile = fileInputRef.current.files[0];
+                    const fileExtension = avatarFile.name.split('.').pop();
+                    const uniqueFileName = `public/${uuidv4()}.${fileExtension}`;
+
+                    const {error: uploadError} = await supabase
+                        .storage
+                        .from('avatars')
+                        .upload(uniqueFileName, avatarFile, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+
+                    if (uploadError) {
+                        console.error('Error uploading avatar:', uploadError.message);
+                        // Optionally, you can set an alert to notify the user that the avatar upload failed
+                    } else {
+                        // Fix for TS2339: Correctly access the publicUrl property
+                        const avatarUrlResponse = await supabase.storage.from('avatars').getPublicUrl(uniqueFileName);
+                        if (avatarUrlResponse.data) {
+                            const avatarUrl = avatarUrlResponse.data.publicUrl; // Correct property access
+                            await supabase
+                                .from('profiles')
+                                .update({avatar_url: avatarUrl})
+                                .eq('id', user.id);
+                        }
+                    } //TODO: nie dziala :(
+                }
                 onClose();
                 setAlert({
                     show: true,
@@ -512,7 +537,15 @@ export const LoginRegisterForm: React.FC<LoginRegisterProps> = ({open, onClose})
                             ) : null}
                             <Grid container spacing={2} sx={{mt: 2}}>
                                 <Grid item xs>
-                                    <Link href="#" variant="body2" sx={{color: Colors.Secondary}}>
+                                    <Link
+                                        component="button"
+                                        variant="body2"
+                                        sx={{color: Colors.Secondary, cursor: 'pointer'}}
+                                        onClick={(e) => {
+                                            e.preventDefault(); // Prevent default link action
+                                            setShowForgotPassword(!showForgotPassword); // Toggle the forgot password form visibility
+                                        }}
+                                    >
                                         {isSigningIn ? 'Forgot password?' : ''}
                                     </Link>
                                 </Grid>
@@ -523,6 +556,30 @@ export const LoginRegisterForm: React.FC<LoginRegisterProps> = ({open, onClose})
                                 </Grid>
                             </Grid>
                         </Box>
+                        {showForgotPassword ? (
+                            <Box component="form" onSubmit={handleForgotPassword} noValidate sx={{mt: 1}}>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    name="resetEmail"
+                                    label="Email Address"
+                                    type="email"
+                                    id="resetEmail"
+                                    autoComplete="email"
+                                    value={resetEmail}
+                                    onChange={(e) => setResetEmail(e.target.value)}
+                                />
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{mt: 3, mb: 2}}
+                                >
+                                    Send Reset Email
+                                </Button>
+                            </Box>
+                        ) : null}
                     </Box>
                     <Typography variant="body2" color="text.secondary" align="center" sx={{mt: 8, mb: 4}}>
                         {'Copyright © '}
